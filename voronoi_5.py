@@ -98,20 +98,30 @@ class Voro:
             else:
                 i = simplex[simplex >= 0][0]  # finite end Voronoi vertex
 
+                # print('rideg_vertices',vor.ridge_vertices)
+                # print(i)
+
                 t = vor.points[pointidx[1]] - vor.points[pointidx[0]]  # tangent
                 t /= np.linalg.norm(t)
                 n = np.array([-t[1], t[0]])  # normal
 
                 midpoint = vor.points[pointidx].mean(axis=0)
+
+                print('midpoint', midpoint,)
+
                 direction = np.sign(np.dot(midpoint - center, n)) * n
+
                 if (vor.furthest_site):
                     direction = -direction
+                
                 far_point = vor.vertices[i] + direction * ptp_bound.max()
 
+                # far_point is edge of line (not vertex)
+                print('far_point', far_point)
                 infinite_segments.append([vor.vertices[i], far_point])
 
         ax.add_collection(LineCollection(finite_segments, colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='solid'))
-        ax.add_collection(LineCollection(infinite_segments,colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='dashed'))
+        ax.add_collection(LineCollection(infinite_segments,colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='solid'))
 
         self._adjust_bound(ax, vor.points)
 
@@ -139,7 +149,9 @@ class World:
         voronoi = Voro()
         self.points_robot = voronoi.draw_voronoi(ax)
 
-        #print(self.points_robot)
+        #points_robot : location of robots
+        print('robot location')
+        print(self.points_robot)
         #appendの引数objはIdealRobotのインスタンスであるから
         #obj.drawはClass IdealRobotのdraw関数である.
         for obj in self.objects:    #appendした物体を次々に描画
@@ -180,7 +192,7 @@ robot1 = IdealRobot( np.array([2,3]).T)              #ロボットのインス�
 robot2 = IdealRobot( np.array([8,9]).T, "red")   #ロボットのインスタンスを生成（赤）
 robot3 = IdealRobot( np.array([8,9]).T, "blue")
 robot4 = IdealRobot( np.array([8,9]).T, "green")
-robot5 = IdealRobot( np.array([8,9]).T, "yellow")
+robot5 = IdealRobot( np.array([8,9]).T, "orange")
 world.append(robot1)
 world.append(robot2)
 world.append(robot3)
