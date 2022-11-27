@@ -97,23 +97,30 @@ class Voro:
                 finite_segments.append(vor.vertices[simplex])
             else:
                 i = simplex[simplex >= 0][0]  # finite end Voronoi vertex
-
-                # print('rideg_vertices',vor.ridge_vertices)
-                # print(i)
-
-                
-
                 t = vor.points[pointidx[1]] - vor.points[pointidx[0]]  # tangent
-                print(t)
 
+                print('pointidx[1]', pointidx[1])
+                print('pointidx[0]', pointidx[0])
+                print('vor.points[pointidx[1]] : ', vor.points[pointidx[1]])
+                print('vor.points[pointidx[0]] : ', vor.points[pointidx[0]])
+                print('vor.points[pointidx[1]] - vor.points[pointidx[0]]: ', vor.points[pointidx[1]] - vor.points[pointidx[0]])
+                print('np.linalg.norm(t) : ', np.linalg.norm(t))
+                print(' ')
+
+                # t is L2 norm
                 t /= np.linalg.norm(t)
-                n = np.array([-t[1], t[0]])  # normal
+                n = np.array([-t[1], t[0]])
+                
+                print('t /= np.linalg.norm(t) :', t)
+                print('t[0] :', t[0])
+                print('t[1] :', t[1])
+                print('n : ' , n)
+                print(' ')
+
                 # midpoint is points that shows between robots
                 midpoint = vor.points[pointidx].mean(axis=0)
                 direction = np.sign(np.dot(midpoint - center, n)) * n
                 
-                print('pintidx[1]', pointidx[1], ':', 'pointidx[0]', pointidx[0])
-                print(t)
                 print('midpoint', midpoint,)
                 print('n', n)
                 print('direction', direction)
@@ -128,7 +135,7 @@ class Voro:
 
                 infinite_segments.append([vor.vertices[i], far_point])
 
-                print(" ")
+                print('==========================================')
 
         ax.add_collection(LineCollection(finite_segments, colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='solid'))
         ax.add_collection(LineCollection(infinite_segments,colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='solid'))
