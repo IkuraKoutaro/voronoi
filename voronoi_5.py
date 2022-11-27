@@ -101,15 +101,22 @@ class Voro:
                 # print('rideg_vertices',vor.ridge_vertices)
                 # print(i)
 
+                
+
                 t = vor.points[pointidx[1]] - vor.points[pointidx[0]]  # tangent
+                print(t)
+
                 t /= np.linalg.norm(t)
                 n = np.array([-t[1], t[0]])  # normal
-
+                # midpoint is points that shows between robots
                 midpoint = vor.points[pointidx].mean(axis=0)
-
-                print('midpoint', midpoint,)
-
                 direction = np.sign(np.dot(midpoint - center, n)) * n
+                
+                print('pintidx[1]', pointidx[1], ':', 'pointidx[0]', pointidx[0])
+                print(t)
+                print('midpoint', midpoint,)
+                print('n', n)
+                print('direction', direction)
 
                 if (vor.furthest_site):
                     direction = -direction
@@ -118,7 +125,10 @@ class Voro:
 
                 # far_point is edge of line (not vertex)
                 print('far_point', far_point)
+
                 infinite_segments.append([vor.vertices[i], far_point])
+
+                print(" ")
 
         ax.add_collection(LineCollection(finite_segments, colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='solid'))
         ax.add_collection(LineCollection(infinite_segments,colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='solid'))
@@ -149,9 +159,8 @@ class World:
         voronoi = Voro()
         self.points_robot = voronoi.draw_voronoi(ax)
 
-        #points_robot : location of robots
-        print('robot location')
-        print(self.points_robot)
+        # points_robot : location of robots
+        print('robot location', self.points_robot)
         #appendの引数objはIdealRobotのインスタンスであるから
         #obj.drawはClass IdealRobotのdraw関数である.
         for obj in self.objects:    #appendした物体を次々に描画
