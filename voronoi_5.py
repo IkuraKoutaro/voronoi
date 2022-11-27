@@ -134,18 +134,18 @@ class Voro:
                 print('np.dot(midpoint - center, n) :', np.dot(midpoint - center, n))
                 print('np.sign(np.dot(midpoint - center, n)) : ', np.sign(np.dot(midpoint - center, n)))
                 print('direction', direction)
+                print(' ')
 
                 if (vor.furthest_site):
                     direction = -direction
-                
-                far_point = vor.vertices[i] + direction * ptp_bound.max()
-
-                print('ptp_bound.max() : ', ptp_bound.max())
                 # far_point is edge of line (not vertex)
-                print('far_point', far_point)
-
+                far_point = vor.vertices[i] + direction * ptp_bound.max()
                 infinite_segments.append([vor.vertices[i], far_point])
 
+                print('i :', i)
+                print('vor.vertices[i] :', vor.vertices[i])
+                print('ptp_bound.max() : ', ptp_bound.max())
+                print('far_point', far_point)
                 print('==========================================')
 
         ax.add_collection(LineCollection(finite_segments, colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='solid'))
