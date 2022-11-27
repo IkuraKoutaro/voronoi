@@ -87,7 +87,11 @@ class Voro:
         line_alpha = kw.get('line_alpha', 1.0)
 
         center = vor.points.mean(axis=0)
+        # numpy.ptp : Range of values (maximum - minimum) along an axis.
         ptp_bound = vor.points.ptp(axis=0)
+
+        print('vor.points : ', vor.points)
+        print('ptp_bound : ', ptp_bound)
 
         finite_segments = []
         infinite_segments = []
@@ -97,20 +101,23 @@ class Voro:
                 finite_segments.append(vor.vertices[simplex])
             else:
                 i = simplex[simplex >= 0][0]  # finite end Voronoi vertex
+                # vor.points[] is robots location
+                # t は隣り合う2つのロボットの座標の差を意味する
                 t = vor.points[pointidx[1]] - vor.points[pointidx[0]]  # tangent
 
                 print('pointidx[1]', pointidx[1])
                 print('pointidx[0]', pointidx[0])
                 print('vor.points[pointidx[1]] : ', vor.points[pointidx[1]])
                 print('vor.points[pointidx[0]] : ', vor.points[pointidx[0]])
-                print('vor.points[pointidx[1]] - vor.points[pointidx[0]]: ', vor.points[pointidx[1]] - vor.points[pointidx[0]])
+                print('t = vor.points[pointidx[1]] - vor.points[pointidx[0]]: ', vor.points[pointidx[1]] - vor.points[pointidx[0]])
                 print('np.linalg.norm(t) : ', np.linalg.norm(t))
                 print(' ')
 
-                # t is L2 norm
+                # p.linalg.norm(t) is norm
+                # t is normalized t
                 t /= np.linalg.norm(t)
                 n = np.array([-t[1], t[0]])
-                
+
                 print('t /= np.linalg.norm(t) :', t)
                 print('t[0] :', t[0])
                 print('t[1] :', t[1])
@@ -121,8 +128,11 @@ class Voro:
                 midpoint = vor.points[pointidx].mean(axis=0)
                 direction = np.sign(np.dot(midpoint - center, n)) * n
                 
-                print('midpoint', midpoint,)
-                print('n', n)
+                print('pointidx :', pointidx)
+                print('midpoint :', midpoint,)
+                print('n :', n)
+                print('np.dot(midpoint - center, n) :', np.dot(midpoint - center, n))
+                print('np.sign(np.dot(midpoint - center, n)) : ', np.sign(np.dot(midpoint - center, n)))
                 print('direction', direction)
 
                 if (vor.furthest_site):
@@ -130,6 +140,7 @@ class Voro:
                 
                 far_point = vor.vertices[i] + direction * ptp_bound.max()
 
+                print('ptp_bound.max() : ', ptp_bound.max())
                 # far_point is edge of line (not vertex)
                 print('far_point', far_point)
 
