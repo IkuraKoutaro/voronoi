@@ -91,65 +91,104 @@ class Voro:
         ptp_bound = vor.points.ptp(axis=0)
 
         print('vor.points : ', vor.points)
+        print('center : ', center)
         print('ptp_bound : ', ptp_bound)
 
         finite_segments = []
         infinite_segments = []
         for pointidx, simplex in zip(vor.ridge_points, vor.ridge_vertices):
+
+            # print('simplex : ', simplex)
+            # print('pointidx : ', pointidx)
             simplex = np.asarray(simplex)
+            # print('simplex : ', simplex)
+            # print('pointidx : ', pointidx)
+
             if np.all(simplex >= 0):
+                i = simplex[simplex >= 0][0]
+                vec_1 = vor.points[pointidx[0]] - vor.vertices[i]
+                vec_2 = vor.points[pointidx[1]] - vor.vertices[i]
+                vec_size_1 = np.linalg.norm(vec_1)
+                vec_size_2 = np.linalg.norm(vec_2)
+                vec_normal_1 = vec_1 / vec_size_1
+                vec_normal_2 = vec_1 / vec_size_2
+
                 finite_segments.append(vor.vertices[simplex])
+                # finite_segments.append(vor.vertices[simplex]+0.2)
+                # finite_segments.append(vor.vertices[simplex]-0.2)
             else:
                 i = simplex[simplex >= 0][0]  # finite end Voronoi vertex
                 # vor.points[] is robots location
-                # t は隣り合う2つのロボットの座標の差を意味する
+                # pointidx is focusing two robots number ex) pointidx[0 4]
+                # t is 隣り合う2つのロボットの座標の差
                 t = vor.points[pointidx[1]] - vor.points[pointidx[0]]  # tangent
 
-                print('pointidx[1]', pointidx[1])
-                print('pointidx[0]', pointidx[0])
-                print('vor.points[pointidx[1]] : ', vor.points[pointidx[1]])
-                print('vor.points[pointidx[0]] : ', vor.points[pointidx[0]])
-                print('t = vor.points[pointidx[1]] - vor.points[pointidx[0]]: ', vor.points[pointidx[1]] - vor.points[pointidx[0]])
-                print('np.linalg.norm(t) : ', np.linalg.norm(t))
-                print(' ')
+                # print('pointidx[1]', pointidx[1])
+                # print('pointidx[0]', pointidx[0])
+                # print('vor.points[pointidx[1]] : ', vor.points[pointidx[1]])
+                # print('vor.points[pointidx[0]] : ', vor.points[pointidx[0]])
+                # print('t = vor.points[pointidx[1]] - vor.points[pointidx[0]]: ', vor.points[pointidx[1]] - vor.points[pointidx[0]])
+                # print('np.linalg.norm(t) : ', np.linalg.norm(t))
+                # print(' ')
 
                 # p.linalg.norm(t) is norm
                 # t is normalized t
                 t /= np.linalg.norm(t)
                 n = np.array([-t[1], t[0]])
 
-                print('t /= np.linalg.norm(t) :', t)
-                print('t[0] :', t[0])
-                print('t[1] :', t[1])
-                print('n : ' , n)
-                print(' ')
+                # print('t /= np.linalg.norm(t) :', t)
+                # print('t[0] :', t[0])
+                # print('t[1] :', t[1])
+                # print('n : ' , n)
+                # print(' ')
 
                 # midpoint is points that shows between robots
                 midpoint = vor.points[pointidx].mean(axis=0)
                 direction = np.sign(np.dot(midpoint - center, n)) * n
-                
-                print('pointidx :', pointidx)
-                print('midpoint :', midpoint,)
-                print('n :', n)
-                print('np.dot(midpoint - center, n) :', np.dot(midpoint - center, n))
-                print('np.sign(np.dot(midpoint - center, n)) : ', np.sign(np.dot(midpoint - center, n)))
-                print('direction', direction)
-                print(' ')
+
+
+                vec_1 = vor.points[pointidx[0]] - vor.vertices[i]
+                vec_2 = vor.points[pointidx[1]] - vor.vertices[i]
+                vec_size_1 = np.linalg.norm(vec_1)
+                vec_size_2 = np.linalg.norm(vec_2)
+                vec_normal_1 = vec_1 / vec_size_1
+                vec_normal_2 = vec_1 / vec_size_2
+
+                # print('==============================')
+                # print('vor.points : ', vor.points[i])
+                # print('vor.vertices : ', vor.vertices[i])
+                # print('vec : ', vec)
+                # print('vec_size :', vec_size)
+                # print('vec_normal : ', vec_normal)
+                # print('==============================')
+
+                # print('pointidx :', pointidx)
+                # print('midpoint :', midpoint,)
+                # print('n :', n)
+                # print('midpoint-center :', midpoint - center)
+                # print('np.dot(midpoint - center, n) :', np.dot(midpoint - center, n))
+                # print('np.sign(np.dot(midpoint - center, n)) : ', np.sign(np.dot(midpoint - center, n)))
+                # print('direction', direction)
+                # print(' ')
 
                 if (vor.furthest_site):
                     direction = -direction
                 # far_point is edge of line (not vertex)
                 far_point = vor.vertices[i] + direction * ptp_bound.max()
+
                 infinite_segments.append([vor.vertices[i], far_point])
+                # infinite_segments.append([vor.vertices[i]+vec_normal_1*0.2, far_point+vec_normal_1*0.2])
+                # infinite_segments.append([vor.vertices[i]-vec_normal_1*0.2, far_point-vec_normal_2*0.2])
 
-                print('i :', i)
-                print('vor.vertices[i] :', vor.vertices[i])
-                print('ptp_bound.max() : ', ptp_bound.max())
-                print('far_point', far_point)
-                print('==========================================')
+                # print('i :', i)
+                # print('vor.vertices[i] :', vor.vertices[i])
+                # print('vor.vertices[i]+0.2 :', vor.vertices[i]+0.2)
+                # print('ptp_bound.max() : ', ptp_bound.max())
+                # print('far_point', far_point)
+                print('=================================================================')
 
-        ax.add_collection(LineCollection(finite_segments, colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='solid'))
-        ax.add_collection(LineCollection(infinite_segments,colors=line_colors,lw=line_width,alpha=line_alpha,linestyle='solid'))
+        ax.add_collection(LineCollection(finite_segments, colors="r" ,lw=4,alpha=line_alpha,linestyle='solid'))
+        ax.add_collection(LineCollection(infinite_segments,colors=line_colors,lw=4,alpha=line_alpha,linestyle='solid'))
 
         self._adjust_bound(ax, vor.points)
 
@@ -215,7 +254,7 @@ world = World()
 #np.array([x,y,theta])であり、poseに参照される
 #.Tは転置
 
-robot1 = IdealRobot( np.array([2,3]).T)              #ロボットのインスタンスを生成
+robot1 = IdealRobot( np.array([2,3]).T)          #ロボットのインスタンスを生成
 robot2 = IdealRobot( np.array([8,9]).T, "red")   #ロボットのインスタンスを生成（赤）
 robot3 = IdealRobot( np.array([8,9]).T, "blue")
 robot4 = IdealRobot( np.array([8,9]).T, "green")
