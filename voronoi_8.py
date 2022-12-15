@@ -42,9 +42,9 @@ class Voro:
         ####### create dictionally #######
         dic = {}
         if(len(vor.vertices)==4):
-            key = ['1', '2', '3', '4']
+            key = ['0', '1', '2', '3']
         else:
-            key = ['1', '2', '3']
+            key = ['0', '1', '2']
         for k in key:
             dic[k] = []
         ##################################
@@ -57,13 +57,12 @@ class Voro:
                 ##### create point_to_point of vector ######
                 vector_point_to_point=(vor.vertices[simplex[1]] - vor.vertices[simplex[0]])
                 dic[key[i]].append(vector_point_to_point)
-
-                print('combination(simplex) : ', simplex)
-                print('vor.vertices[simplex[0]] : ', vor.vertices[simplex[0]])
-                print('vor.vertices[simplex[1]] : ', vor.vertices[simplex[1]])
-                print('vertices_point : ', i)
-                print('vector_point_to_point : ', vector_point_to_point)
-                print('')
+                # print('combination(simplex) : ', simplex)
+                # print('vor.vertices[simplex[0]] : ', vor.vertices[simplex[0]])
+                # print('vor.vertices[simplex[1]] : ', vor.vertices[simplex[1]])
+                # print('vertices_point : ', i)
+                # print('vector_point_to_point : ', vector_point_to_point)
+                # print('')
                 ############################################
             else:
                 ##### create far_point of vector ######
@@ -80,20 +79,13 @@ class Voro:
                 ########################################
                 
 
-            ###############################
+            ####### create voronoi vertices #######
             if np.all(simplex >= 0):
                 i = simplex[simplex >= 0][0]
-                # print('vertices',i)
                 finite_segments.append(vor.vertices[simplex])
-                # vec_size_1 = np.linalg.norm(vec_1)
-                # vec_size_2 = np.linalg.norm(vec_2)
             else:
                 i = simplex[simplex >= 0][0]
-                # vor.points[] is robots location
-                # pointidx is focusing two robots number ex) pointidx[0 4]
                 t = vor.points[pointidx[1]] - vor.points[pointidx[0]]
-                # vec_size_1 = np.linalg.norm(vec_1)
-                # vec_size_2 = np.linalg.norm(vec_2)
                 t /= np.linalg.norm(t)
                 n = np.array([-t[1], t[0]])
                 midpoint = vor.points[pointidx].mean(axis=0)
@@ -102,28 +94,34 @@ class Voro:
                     direction = -direction
                 far_point = vor.vertices[i] + direction * ptp_bound.max()
                 infinite_segments.append([vor.vertices[i], far_point])
+            #######################################
 
         # print(dic)
-        # print(' ')
-
         ###### create combination of vector #######
         import itertools
+
         pair = {}
+        # if(len(vor.vertices)==4):
+        #     key = ['0', '1', '2', '3']
+        # else:
+        #     key = ['0', '1', '2']
+        # for k in key:
+        #     pair[k] = []
         dictionary_holder = {}
         j = 0
         if(len(vor.vertices)==4):
             for i in range(len(dic)):
                 dictionary_holder[i] = dic[key[i][0]]
-                # print('i : ', i, ' , ', 'b :' , b[i])
+                print('i : ', i, ' , ', 'dictionary_holder[i] :' , dictionary_holder[i])
         for i in range(len(dictionary_holder)):
             for i in itertools.combinations(dictionary_holder[i], 2):
+                # pair[key[j]].append(i)
                 pair[j] = i
-                # print(pair[j])
+                print(pair[j])
                 j += 1
         # print(' ')
         # print('pair[0]', pair[0])        
         # print('pair[0]', pair[0][0])        
-        # print(' ')
         ###########################################
         # print(len(pair))
         for a in range(len(pair)):
@@ -131,7 +129,15 @@ class Voro:
             vector_2 = pair[a][1]
             vector_1_size = np.linalg.norm(vector_1)
             vector_2_size = np.linalg.norm(vector_2)
-            angle_bisector = 0.2 * ((vector_2_size*vector_1 + vector_1_size*vector_2) / (vector_1_size+vector_2_size))
+            # print("vector_1 : ", vector_1)
+            # print("vector_2 : ", vector_2)
+            # print("vector_1_size : ", vector_1_size)
+            # print("vector_2_size : ", vector_2_size)
+            # angle_bisector = 0.2 * ((vector_2_size*vector_1 + vector_1_size*vector_2) / (vector_1_size+vector_2_size))
+            angle_bisector = 0.2 * ((vector_1/vector_1_size) + (vector_2/vector_2_size))
+
+            # vector_1 = angle_bisector + vor.vertices[i]
+
             # print('angle_bisector :', angle_bisector)
             ax.plot(angle_bisector[0], angle_bisector[1], 'o', color='r' )
 
