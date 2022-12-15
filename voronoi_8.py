@@ -27,7 +27,6 @@ class Voro:
         line_alpha = kw.get('line_alpha', 1.0)
 
         center = vor.points.mean(axis=0)
-        # numpy.ptp : Range of values (maximum - minimum) along an axis.
         ptp_bound = vor.points.ptp(axis=0)
 
 
@@ -53,12 +52,18 @@ class Voro:
         for pointidx, simplex in zip(vor.ridge_points, vor.ridge_vertices):
             simplex = np.asarray(simplex)
             i = simplex[simplex >= 0][0]
-
             ######### create vector #########
             if np.all(simplex >= 0):
                 ##### create point_to_point of vector ######
                 vector_point_to_point=(vor.vertices[simplex[1]] - vor.vertices[simplex[0]])
                 dic[key[i]].append(vector_point_to_point)
+
+                print('combination(simplex) : ', simplex)
+                print('vor.vertices[simplex[0]] : ', vor.vertices[simplex[0]])
+                print('vor.vertices[simplex[1]] : ', vor.vertices[simplex[1]])
+                print('vertices_point : ', i)
+                print('vector_point_to_point : ', vector_point_to_point)
+                print('')
                 ############################################
             else:
                 ##### create far_point of vector ######
@@ -73,6 +78,8 @@ class Voro:
                 vector_point_to_farpoint = (far_point - vor.vertices[i])
                 dic[key[i]].append(vector_point_to_farpoint)
                 ########################################
+                
+
             ###############################
             if np.all(simplex >= 0):
                 i = simplex[simplex >= 0][0]
@@ -96,30 +103,38 @@ class Voro:
                 far_point = vor.vertices[i] + direction * ptp_bound.max()
                 infinite_segments.append([vor.vertices[i], far_point])
 
-        print(dic)
-        print(' ')
+        # print(dic)
+        # print(' ')
 
         ###### create combination of vector #######
         import itertools
         pair = {}
-        b = {}
+        dictionary_holder = {}
         j = 0
         if(len(vor.vertices)==4):
             for i in range(len(dic)):
-                b[i] = dic[key[i][0]]
+                dictionary_holder[i] = dic[key[i][0]]
                 # print('i : ', i, ' , ', 'b :' , b[i])
-        for i in range(len(b)):
-            for i in itertools.combinations(b[i], 2):
+        for i in range(len(dictionary_holder)):
+            for i in itertools.combinations(dictionary_holder[i], 2):
                 pair[j] = i
-                print(pair[j])
+                # print(pair[j])
                 j += 1
         # print(' ')
         # print('pair[0]', pair[0])        
         # print('pair[0]', pair[0][0])        
         # print(' ')
         ###########################################
-        
-        
+        # print(len(pair))
+        for a in range(len(pair)):
+            vector_1 = pair[a][0]
+            vector_2 = pair[a][1]
+            vector_1_size = np.linalg.norm(vector_1)
+            vector_2_size = np.linalg.norm(vector_2)
+            angle_bisector = 0.2 * ((vector_2_size*vector_1 + vector_1_size*vector_2) / (vector_1_size+vector_2_size))
+            # print('angle_bisector :', angle_bisector)
+            ax.plot(angle_bisector[0], angle_bisector[1], 'o', color='r' )
+
         ax.add_collection(LineCollection(finite_segments, colors='r' , lw=1,alpha=line_alpha,linestyle='solid'))
         ax.add_collection(LineCollection(infinite_segments,colors=line_colors, lw=1,alpha=line_alpha,linestyle='solid'))
 
@@ -148,7 +163,7 @@ class World:
         self.points_robot = voronoi.draw_voronoi(ax)
 
         # points_robot : location of robots
-        print('robot location', self.points_robot)
+        # print('robot location', self.points_robot)
         #appendの引数objはIdealRobotのインスタンスであるから
         #obj.drawはClass IdealRobotのdraw関数である.
         for obj in self.objects:    #appendした物体を次々に描画
