@@ -37,7 +37,6 @@ class Voro:
         return ax.figure
 
     def voronoi_plot(self, vor, ax=None, **kw):
-        from matplotlib.collections import LineCollection
 
         if vor.points.shape[1] != 2:
             raise ValueError("Voronoi diagram is not 2-D")
@@ -68,12 +67,12 @@ class Voro:
 
             if np.all(simplex >= 0):
                 i = simplex[simplex >= 0][0]
-                vec_1 = vor.points[pointidx[0]] - vor.vertices[i]
-                vec_2 = vor.points[pointidx[1]] - vor.vertices[i]
-                vec_size_1 = np.linalg.norm(vec_1)
-                vec_size_2 = np.linalg.norm(vec_2)
-                vec_normal_1 = vec_1 / vec_size_1
-                vec_normal_2 = vec_1 / vec_size_2
+                # vec_1 = vor.points[pointidx[0]] - vor.vertices[i]
+                # vec_2 = vor.points[pointidx[1]] - vor.vertices[i]
+                # vec_size_1 = np.linalg.norm(vec_1)
+                # vec_size_2 = np.linalg.norm(vec_2)
+                # vec_normal_1 = vec_1 / vec_size_1
+                # vec_normal_2 = vec_1 / vec_size_2
 
                 finite_segments.append(vor.vertices[simplex])
                 # finite_segments.append(vor.vertices[simplex]+0.2)
@@ -109,29 +108,29 @@ class Voro:
                 direction = np.sign(np.dot(midpoint - center, n)) * n
 
 
-                vec_1 = vor.points[pointidx[0]] - vor.vertices[i]
-                vec_2 = vor.points[pointidx[1]] - vor.vertices[i]
-                vec_size_1 = np.linalg.norm(vec_1)
-                vec_size_2 = np.linalg.norm(vec_2)
-                vec_normal_1 = vec_1 / vec_size_1
-                vec_normal_2 = vec_1 / vec_size_2
+                # vec_1 = vor.points[pointidx[0]] - vor.vertices[i]
+                # vec_2 = vor.points[pointidx[1]] - vor.vertices[i]
+                # vec_size_1 = np.linalg.norm(vec_1)
+                # vec_size_2 = np.linalg.norm(vec_2)
+                # vec_normal_1 = vec_1 / vec_size_1
+                # vec_normal_2 = vec_1 / vec_size_2
 
-                # print('==============================')
-                # print('vor.points : ', vor.points[i])
+                print('==============================')
+                print('vor.points : ', vor.points[i])
                 # print('vor.vertices : ', vor.vertices[i])
                 # print('vec : ', vec)
                 # print('vec_size :', vec_size)
                 # print('vec_normal : ', vec_normal)
                 # print('==============================')
 
-                # print('pointidx :', pointidx)
-                # print('midpoint :', midpoint,)
-                # print('n :', n)
-                # print('midpoint-center :', midpoint - center)
-                # print('np.dot(midpoint - center, n) :', np.dot(midpoint - center, n))
-                # print('np.sign(np.dot(midpoint - center, n)) : ', np.sign(np.dot(midpoint - center, n)))
-                # print('direction', direction)
-                # print(' ')
+                print('pointidx :', pointidx)
+                print('midpoint :', midpoint,)
+                print('n :', n)
+                print('midpoint-center :', midpoint - center)
+                print('np.dot(midpoint - center, n) :', np.dot(midpoint - center, n))
+                print('np.sign(np.dot(midpoint - center, n)) : ', np.sign(np.dot(midpoint - center, n)))
+                print('direction', direction)
+                print(' ')
 
                 if (vor.furthest_site):
                     direction = -direction
@@ -141,6 +140,8 @@ class Voro:
                 infinite_segments.append([vor.vertices[i], far_point])
                 # infinite_segments.append([vor.vertices[i]+vec_normal_1*0.2, far_point+vec_normal_1*0.2])
                 # infinite_segments.append([vor.vertices[i]-vec_normal_1*0.2, far_point-vec_normal_2*0.2])
+
+
 
                 # print('i :', i)
                 # print('vor.vertices[i] :', vor.vertices[i])
