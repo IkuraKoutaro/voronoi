@@ -14,10 +14,8 @@ class Voro:
         self.maxvalue = 10
 
     def voronoi_plot(self, vor, ax=None, **kw):
-
         if vor.points.shape[1] != 2:
             raise ValueError("Voronoi diagram is not 2-D")
-
         if kw.get('show_points', True):
             point_size = kw.get('point_size', None)
             ax.plot(vor.points[:, 0], vor.points[:, 1], '.', markersize=point_size)
@@ -27,15 +25,8 @@ class Voro:
         line_colors = kw.get('line_colors', 'k')
         line_width = kw.get('line_width', 1.0)
         line_alpha = kw.get('line_alpha', 1.0)
-
         center = vor.points.mean(axis=0)
         ptp_bound = vor.points.ptp(axis=0)
-
-
-        # finite_segments   = ( , )
-        # infinite_segments = ( , )
-        # this means point to point (point = vertices)
-
         finite_segments = []
         infinite_segments = []
         vector_point_to_point = []
@@ -54,11 +45,19 @@ class Voro:
         for pointidx, simplex in zip(vor.ridge_points, vor.ridge_vertices):
             simplex = np.asarray(simplex)
             i = simplex[simplex >= 0][0]
+            # j = simplex[simplex >= 0][1]
+            print('simplex : ', simplex)
+            print('simplex[0] : ', simplex[0])
+            print('i : ', i)
+            # print('j : ', j)
             ######### create vector #########
             if np.all(simplex >= 0):
                 ##### create point_to_point of vector ######
                 vector_point_to_point=(vor.vertices[simplex[1]] - vor.vertices[simplex[0]])
-                dic[key[i]].append(vector_point_to_point)
+                dic[key[simplex[0]]].append(vector_point_to_point)
+                vector_point_to_point=(vor.vertices[simplex[0]] - vor.vertices[simplex[1]])
+                dic[key[simplex[1]]].append(vector_point_to_point)
+                # dic[key[i]].append(vector_point_to_point)
                 # print('combination(simplex) : ', simplex)
                 # print('vor.vertices[simplex[0]] : ', vor.vertices[simplex[0]])
                 # print('vor.vertices[simplex[1]] : ', vor.vertices[simplex[1]])
@@ -125,7 +124,6 @@ class Voro:
         ###########################################
         for a in range(len(holder)):
             for vector in holder[a]:
-                vertices_number = a
                 vector_1 = vector[0]
                 vector_2 = vector[1]
                 vector_1_size = np.linalg.norm(vector_1)
@@ -133,17 +131,14 @@ class Voro:
                 # がんばれ！！　byなかむら
                 angle_bisector = 0.2 * ((vector_2_size*vector_1 + vector_1_size*vector_2) / (vector_1_size+vector_2_size) / np.linalg.norm((vector_2_size*vector_1 + vector_1_size*vector_2) / (vector_1_size+vector_2_size)))
                 angle_bisector = angle_bisector + vor.vertices[a]
-
                 # print("vector_1 : ", vector_1)
                 # print("vector_2 : ", vector_2)
                 # print("vector_1_size : ", vector_1_size)
                 # print("vector_2_size : ", vector_2_size)
-                print('angle_bisector :', angle_bisector)
-                ax.plot(angle_bisector[0], angle_bisector[1], 'o', color='r' )
-
+                # print('angle_bisector :', angle_bisector)
+                ax.plot(angle_bisector[0], angle_bisector[1], '.', color='r' )
         ax.add_collection(LineCollection(finite_segments, colors='r' , lw=1,alpha=line_alpha,linestyle='solid'))
         ax.add_collection(LineCollection(infinite_segments,colors=line_colors, lw=1,alpha=line_alpha,linestyle='solid'))
-
         return ax.figure
 
     def draw_voronoi(self, ax):
@@ -164,10 +159,8 @@ class World:
     def world_draw(self):
         fig = plt.figure(figsize=(8,8), facecolor='lightgray')
         ax = fig.add_subplot(111)
-        
         voronoi = Voro()
         self.points_robot = voronoi.draw_voronoi(ax)
-
         # points_robot : location of robots
         # print('robot location', self.points_robot)
         #appendの引数objはIdealRobotのインスタンスであるから
@@ -176,7 +169,6 @@ class World:
             obj.robot_draw(ax, self.points_robot, self.count)
             self.count+=1
 
-        #axの調整
         ax.set_aspect('equal')    #縦横比を座標の値と一致させる
         ax.set_xlim(0,10)         #X軸を-5m×5mの範囲で描画
         ax.set_ylim(0,10)         #Y軸も同様に
@@ -192,7 +184,6 @@ class IdealRobot:
         self.color = color
     
     def robot_draw(self, ax, points_robot, i):
-        # print(i)
         x, y = points_robot[i]
         theta =  math.pi/6
         xn = x + self.r * math.cos(theta)
@@ -200,15 +191,12 @@ class IdealRobot:
 
         ax.plot([x,xn], [y,yn], color=self.color)
         c = patches.Circle(xy=(x,y), radius=self.r, fill=False, color=self.color)
-
         ax.add_patch(c)
 
 world = World()
 #np.array([x,y,theta])であり、poseに参照される
-#.Tは転置
-
-robot1 = IdealRobot( np.array([2,3]).T)          #ロボットのインスタンスを生成
-robot2 = IdealRobot( np.array([8,9]).T, "red")   #ロボットのインスタンスを生成（赤）
+robot1 = IdealRobot( np.array([2,3]).T)
+robot2 = IdealRobot( np.array([8,9]).T, "red")
 robot3 = IdealRobot( np.array([8,9]).T, "blue")
 robot4 = IdealRobot( np.array([8,9]).T, "green")
 robot5 = IdealRobot( np.array([8,9]).T, "orange")
