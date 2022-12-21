@@ -1,4 +1,4 @@
-# add point of bvc's verticese complete
+# add point of bvc's verticese 
 
 import math
 import matplotlib.patches as patches
@@ -30,6 +30,7 @@ class Voro:
         finite_segments = []
         infinite_segments = []
         finite_segments_bvc = []
+        finite_segments_bvc_2 = []
         infinite_segments_bvc = []
         vector_point_to_point = []
         vector_point_to_farpoint = []
@@ -103,17 +104,14 @@ class Voro:
         if(len(vor.vertices)==4):
             for i in range(len(dic)):
                 dictionary_holder[i] = dic[key[i][0]]
-                # print('i : ', i, ' , ', 'dictionary_holder[i] :' , dictionary_holder[i])
                 for j in itertools.combinations(dictionary_holder[i], 2):
                     pair[key[i]].append(j)
-        # print('pair : ', pair)
         holder = {}
         for a in range(len(pair)):
             holder[a] = pair[key[a][0]]
         ##########################################
         vec = {}
         vec = list(holder.values())
-        cou = 0
         ###########################################
         for a in range(len(holder)):
             for vector in holder[a]:
@@ -125,26 +123,39 @@ class Voro:
                 angle_bisector = 0.2 * ((vector_2_size*vector_1 + vector_1_size*vector_2) / (vector_1_size+vector_2_size) / np.linalg.norm((vector_2_size*vector_1 + vector_1_size*vector_2) / (vector_1_size+vector_2_size)))
                 angle_bisector = angle_bisector + vor.vertices[a]
                 ax.plot(angle_bisector[0], angle_bisector[1], '.', color='r' )
+                print("vector_1 : ", vector_1)
+                print("vector_2 : ", vector_2)
+                # print("vector_1_size : ", vector_1_size)
+                # print("vector_2_size : ", vector_2_size)
                 ########################################
+                count = 0
                 for x in range(len(vec)):
                     for y in range(len(vec[x])):
                         for z in range(len(vec[x][y])):
-                            # print(vec[x][y][z])
                             if np.all(vector_1 == -1*vec[x][y][z]) or np.all(vector_2 == -1*vec[x][y][z]):
-                                print(vec[x][y][z])
-                                cou+=1
-                print(cou)
-                # がんばれ！！　byなかむら
+                                print('angle_bisector : ', angle_bisector)
+                                print('z : ', z ,'  ', 'vec[x][y][z] : ', vec[x][y][z])
+                                count += 1
                 
-                # print("vector_1 : ", vector_1)
-                # print("vector_2 : ", vector_2)
-                # print("vector_1_size : ", vector_1_size)
-                # print("vector_2_size : ", vector_2_size)
-                # print('angle_bisector :', angle_bisector)
+                if (count == 4):
+                    finite_segments_bvc.append(angle_bisector)
                 
+        print('finite_segments_bvc : ', finite_segments_bvc)
+        # print('finite_segments : ', finite_segments)
+
+        # d = {}
+        p = {}
+        c = 0
+        pair = ()
+        # for a in range(len(finite_segments_bvc)):
+        #     finite_segments_bvc_2[a]  = finite_segments_bvc[a]
+        #     print('finite_segments_bvc[a] : ', finite_segments_bvc[a])
+        # for pair in itertools.combinations(finite_segments_bvc, 2):
+        #     print(pair)
+        # がんばれ！！　byなかむら        
         ax.add_collection(LineCollection(finite_segments, colors='r' , lw=1,alpha=line_alpha,linestyle='solid'))
         ax.add_collection(LineCollection(infinite_segments,colors=line_colors, lw=1,alpha=line_alpha,linestyle='solid'))
-        # ax.add_collection(LineCollection(finite_segments, colors='g' , lw=1,alpha=line_alpha,linestyle='solid'))
+        # ax.add_collection(LineCollection(finite_segments_bvc, colors='g' , lw=1,alpha=line_alpha,linestyle='solid'))
         # ax.add_collection(LineCollection(infinite_segments, colors='g' , lw=1,alpha=line_alpha,linestyle='solid'))
         return ax.figure
 
