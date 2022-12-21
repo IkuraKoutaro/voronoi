@@ -29,6 +29,8 @@ class Voro:
         ptp_bound = vor.points.ptp(axis=0)
         finite_segments = []
         infinite_segments = []
+        finite_segments_bvc = []
+        infinite_segments_bvc = []
         vector_point_to_point = []
         vector_point_to_farpoint = []
 
@@ -45,9 +47,7 @@ class Voro:
         for pointidx, simplex in zip(vor.ridge_points, vor.ridge_vertices):
             simplex = np.asarray(simplex)
             i = simplex[simplex >= 0][0]
-            print('simplex : ', simplex)
-            print('simplex[0] : ', simplex[0])
-            print('i : ', i)
+            # print('simplex : ', simplex)
             ######### create vector #########
             if np.all(simplex >= 0):
                 ##### create point_to_point of vector ######
@@ -92,45 +92,60 @@ class Voro:
         # print(dic)
         ###### create combination of vector #######
         import itertools
-
         pair = {}
         dictionary_holder = {}
-
         if(len(vor.vertices)==4):
             key = ['0', '1', '2', '3']
         else:
             key = ['0', '1', '2']
         for k in key:
             pair[k] = []
-
         if(len(vor.vertices)==4):
             for i in range(len(dic)):
                 dictionary_holder[i] = dic[key[i][0]]
                 # print('i : ', i, ' , ', 'dictionary_holder[i] :' , dictionary_holder[i])
                 for j in itertools.combinations(dictionary_holder[i], 2):
                     pair[key[i]].append(j)
-                    # pair[j] = i
+        # print('pair : ', pair)
         holder = {}
         for a in range(len(pair)):
             holder[a] = pair[key[a][0]]
+        ##########################################
+        vec = {}
+        vec = list(holder.values())
+        cou = 0
         ###########################################
         for a in range(len(holder)):
             for vector in holder[a]:
+                ####### curiculate angle bisector #######
                 vector_1 = vector[0]
                 vector_2 = vector[1]
                 vector_1_size = np.linalg.norm(vector_1)
                 vector_2_size = np.linalg.norm(vector_2)
-                # がんばれ！！　byなかむら
                 angle_bisector = 0.2 * ((vector_2_size*vector_1 + vector_1_size*vector_2) / (vector_1_size+vector_2_size) / np.linalg.norm((vector_2_size*vector_1 + vector_1_size*vector_2) / (vector_1_size+vector_2_size)))
                 angle_bisector = angle_bisector + vor.vertices[a]
+                ax.plot(angle_bisector[0], angle_bisector[1], '.', color='r' )
+                ########################################
+                for x in range(len(vec)):
+                    for y in range(len(vec[x])):
+                        for z in range(len(vec[x][y])):
+                            # print(vec[x][y][z])
+                            if np.all(vector_1 == -1*vec[x][y][z]) or np.all(vector_2 == -1*vec[x][y][z]):
+                                print(vec[x][y][z])
+                                cou+=1
+                print(cou)
+                # がんばれ！！　byなかむら
+                
                 # print("vector_1 : ", vector_1)
                 # print("vector_2 : ", vector_2)
                 # print("vector_1_size : ", vector_1_size)
                 # print("vector_2_size : ", vector_2_size)
                 # print('angle_bisector :', angle_bisector)
-                ax.plot(angle_bisector[0], angle_bisector[1], '.', color='r' )
+                
         ax.add_collection(LineCollection(finite_segments, colors='r' , lw=1,alpha=line_alpha,linestyle='solid'))
         ax.add_collection(LineCollection(infinite_segments,colors=line_colors, lw=1,alpha=line_alpha,linestyle='solid'))
+        # ax.add_collection(LineCollection(finite_segments, colors='g' , lw=1,alpha=line_alpha,linestyle='solid'))
+        # ax.add_collection(LineCollection(infinite_segments, colors='g' , lw=1,alpha=line_alpha,linestyle='solid'))
         return ax.figure
 
     def draw_voronoi(self, ax):
@@ -153,7 +168,6 @@ class World:
         ax = fig.add_subplot(111)
         voronoi = Voro()
         self.points_robot = voronoi.draw_voronoi(ax)
-        # points_robot : location of robots
         # print('robot location', self.points_robot)
         for obj in self.objects:
             obj.robot_draw(ax, self.points_robot, self.count)
