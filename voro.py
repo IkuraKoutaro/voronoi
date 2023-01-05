@@ -228,3 +228,5 @@ world.append(robot2)
 world.append(robot3)
 world.append(robot4)
 world.append(robot5)
+
+world.world_draw()
